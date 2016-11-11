@@ -1,0 +1,2 @@
+_NUMPY_IDENTIFIER = bytes('NP||')
+_PICKLE_IDENTIFIER = bytes('PKL||')

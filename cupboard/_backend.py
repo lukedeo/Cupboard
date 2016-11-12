@@ -170,7 +170,7 @@ AVAILABLE_BACKENDS = [
 
 for be in UNAVAILABLE_BACKENDS:
     for op in _OPS:
-        exec('_{}_{} = _backend_unavailable({})'.format(op, be, be))
+        exec('_{}_{} = _backend_unavailable("{}")'.format(op, be, be))
 
 __all__ = ['UNAVAILABLE_BACKENDS', '_to_string', '_obj_from_pkl_string'] + \
     ['_{}_{}'.format(be, op) for op in _OPS for be in AVAILABLE_BACKENDS]

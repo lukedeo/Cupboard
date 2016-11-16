@@ -16,7 +16,8 @@ class BackendUnavailable(ImportError):
 
 # to dump things to pickle for insertion
 
-_OPS = ['write', 'create', 'batchwriter', 'reader', 'keys', 'values', 'items']
+_OPS = ['write', 'create', 'batchwriter',
+        'reader', 'keys', 'values', 'items', 'delete']
 
 
 def _backend_unavailable(backend):

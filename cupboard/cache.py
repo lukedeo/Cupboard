@@ -41,7 +41,7 @@ class Cupboard(object):
             self._backend = BACKEND
 
         # create the actual callables dependent on the backend
-        for func in ['write', 'create', 'batchwriter', 'reader', 'keys', 'values', 'items']:
+        for func in ['write', 'create', 'batchwriter', 'reader', 'keys', 'values', 'items', 'delete']:
             exec('self._db_{} = _{}_{}'.format(func, self._backend, func))
 
         self._db = self._db_create(*args, **kwargs)
@@ -111,9 +111,16 @@ class Cupboard(object):
 
         return self._stager
 
+    def delete(self, key):
+        self._key_ptr = bytes(key)
+        self._db_delete(self._db, self._key_ptr)
+
     def __setitem__(self, key, o):
         self._key_ptr = bytes(key)
         self._stager = o
+
+    def __delitem__(self, key):
+        self.delete(key)
 
     def items(self):
         return self._db_items(self._db, self._reconstruct_obj)

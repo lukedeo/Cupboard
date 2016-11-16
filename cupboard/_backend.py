@@ -57,13 +57,27 @@ def _lmdb_write(db, *args):
         txn.put(*args)
 
 
+# delete routines
+def _redis_delete(db, *args):
+    db.delete(*args)
+
+
+def _leveldb_delete(db, *args):
+    db.delete(*args)
+
+
+def _lmdb_delete(db, *args):
+    with db.begin(write=True, buffers=True) as txn:
+        txn.delete(*args)
+
+
 # read routines
 def _redis_reader(db, *args):
-    db.get(*args)
+    return db.get(*args)
 
 
 def _leveldb_reader(db, *args):
-    db.get(*args)
+    return db.get(*args)
 
 
 def _lmdb_reader(db, *args):

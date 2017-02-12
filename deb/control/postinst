@@ -1,6 +1,6 @@
 APP_BASE="${BASE}/${APP}"
 
-pushd "${APP_BASE}"
+cd "${APP_BASE}"
 
 python setup.py build && python setup.py install
 

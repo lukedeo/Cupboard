@@ -1,0 +1,42 @@
+ext.semanticVersion = SemanticVersion.from(version)
+project.ext.'gradle.release.useAutomaticVersion' = 'true'
+project.ext.releaseVersion=semanticVersion.releaseVersion()
+def releaseType = System.getProperty("release.type", "")
+project.ext.newVersion=semanticVersion.newVersion(releaseType)
+
+class SemanticVersion {
+	int major
+	int minor
+	int bugfix
+	String extension
+
+	SemanticVersion newVersion(String releaseType = "bugfix"){
+        if(releaseType == "major"){
+            return new SemanticVersion(major:major+1, minor:0, bugfix:0, extension:"")
+        }else if(releaseType == "minor"){
+            return new SemanticVersion(major:major, minor:minor+1, bugfix:0, extension:"")
+        }else{
+            return new SemanticVersion(major:major, minor:minor, bugfix:bugfix+1, extension:"")
+        }
+    }
+
+	public static SemanticVersion from(String versionString){
+		def splitted = versionString.split('[\\.-]')
+		return new SemanticVersion(major: Integer.parseInt(splitted[0]),
+								   minor: Integer.parseInt(splitted[1]),
+								   bugfix: Integer.parseInt(splitted[2]),
+								   extension: splitted.length != 4 ?: splitted[3])
+	}
+
+	public SemanticVersion releaseVersion(){
+		if(extension==null){
+			return this
+		} else {
+			return new SemanticVersion(major:major, minor:minor, bugfix:bugfix, extension:"");
+		}
+	}
+
+	String toString(){
+        "${major}.${minor}.${bugfix}${extension ? '-' + extension.toString() :''}"
+    }
+}

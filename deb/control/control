@@ -1,0 +1,8 @@
+Package: cupboard
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Luke de Oliveira <lukedeo@vaitech.io>
+Description: [[description]]
+Distribution: development

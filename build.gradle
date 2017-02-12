@@ -82,7 +82,7 @@ publishing {
 task deb(dependsOn: buildDeb)
 
 release {
-    buildTasks = ['build', 'deb', 'apt']
+    buildTasks = ['build', 'deb']
     // useAutomaticVersion = true
 }
 

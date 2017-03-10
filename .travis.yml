@@ -1,18 +1,24 @@
 sudo: required
 dist: trusty
 language: python
+cache: pip
 matrix:
     include:
         - python: 2.7
-        - python: 3.5
-        - python: 3.6
+        # - python: 3.5
+        # - python: 3.6
 before_install:
-  - sudo apt-get update
+  - sudo apt-get update && sudo apt-get install redis
 install:
   - echo $(python --version)
   - curl -s https://gist.githubusercontent.com/lukedeo/58b4b9cb75d9d62817829b2afa900ac3/raw/a2bbb2fa0cade9885ac343fbc6766586ac5a5b9c/build-leveldb.sh | sudo sh -
   - sudo pip install numpy plyvel lmdb redis 
   - sudo pip install -e .[all,tests]
+  - wget http://download.redis.io/releases/redis-3.2.8.tar.gz && \
+    tar xzf redis-3.2.8.tar.gz && \
+    cd redis-3.2.8 && \
+    make && \
+    src/redis-server &
 # command to run tests
 script:
   # run keras backend init to initialize backend config

@@ -92,46 +92,55 @@ def _redis_close(db):
 
 
 # write routines
-def _lmdb_write(db, *args):
+def _lmdb_write(db, *args, **kwargs):
     with db.begin(write=True) as txn:
-        txn.put(*args)
+        txn.put(*args, **kwargs)
 
 
-def _leveldb_write(db, *args):
+def _leveldb_write(db, *args, **kwargs):
+    if kwargs:
+        raise NotImplementedError('passing keyword arguments to '
+                                  'LevelDB not supported')
     db.put(*list(map(native, args)))
 
 
-def _redis_write(db, *args):
-    db.set(*args)
+def _redis_write(db, *args, **kwargs):
+    db.set(*args, **kwargs)
 
 
 # delete routines
-def _lmdb_delete(db, *args):
+def _lmdb_delete(db, *args, **kwargs):
     with db.begin(write=True, buffers=True) as txn:
-        txn.delete(*args)
+        txn.delete(*args, **kwargs)
 
 
-def _leveldb_delete(db, *args):
+def _leveldb_delete(db, *args, **kwargs):
+    if kwargs:
+        raise NotImplementedError('passing keyword arguments to '
+                                  'LevelDB not supported')
     db.delete(*list(map(native, args)))
 
 
-def _redis_delete(db, *args):
-    db.delete(*args)
+def _redis_delete(db, *args, **kwargs):
+    db.delete(*args, **kwargs)
 
 
 # read routines
-def _lmdb_reader(db, *args):
+def _lmdb_reader(db, *args, **kwargs):
     with db.begin(write=False) as txn:
-        v = txn.get(*args)
+        v = txn.get(*args, **kwargs)
     return v
 
 
-def _leveldb_reader(db, *args):
+def _leveldb_reader(db, *args, **kwargs):
+    if kwargs:
+        raise NotImplementedError('passing keyword arguments to '
+                                  'LevelDB not supported')
     return db.get(*list(map(native, args)))
 
 
-def _redis_reader(db, *args):
-    return db.get(*args)
+def _redis_reader(db, *args, **kwargs):
+    return db.get(*args, **kwargs)
 
 
 # keys

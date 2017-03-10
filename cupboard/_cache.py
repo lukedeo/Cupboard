@@ -140,6 +140,7 @@ class Cupboard(object):
 
         self._buffer = None
         self._key_ptr = None
+        self.__additional_args = {}
 
         self._M = MarshalHandler()
 
@@ -152,6 +153,12 @@ class Cupboard(object):
         yield protocol
         self._M.protocol = orig_protocol
 
+    @contextmanager
+    def pass_arguments(self, **kwargs):
+        self.__additional_args.update(kwargs)
+        yield
+        self.__additional_args = {}
+
     @property
     def _stager(self):
         return self._reconstruct_obj(self._buffer)
@@ -159,7 +166,8 @@ class Cupboard(object):
     @_stager.setter
     def _stager(self, o):
         self._buffer = self._M.marshal(o)
-        self._db_write(self._write_obj, self._key_ptr, self._buffer)
+        self._db_write(self._write_obj, self._key_ptr,
+                       self._buffer, **self.__additional_args)
 
     # @staticmethod
     def _reconstruct_obj(self, buf):
@@ -167,7 +175,7 @@ class Cupboard(object):
 
     def __getitem__(self, key):
         self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(self._db, self._key_ptr)
+        self._buffer = self._db_reader(self._db, self._key_ptr, **self.__additional_args)
 
         if self._stager is None:
             if key not in self._db_keys(self._db, self._reconstruct_obj):
@@ -177,7 +185,7 @@ class Cupboard(object):
 
     def get(self, key, replacement=None):
         self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(self._db, self._key_ptr)
+        self._buffer = self._db_reader(self._db, self._key_ptr, **self.__additional_args)
 
         if self._stager is None:
             if key not in self._db_keys(self._db, self._reconstruct_obj):
@@ -187,7 +195,7 @@ class Cupboard(object):
 
     def delete(self, key):
         self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
-        self._db_delete(self._db, self._key_ptr)
+        self._db_delete(self._db, self._key_ptr, **self.__additional_args)
 
     def __setitem__(self, key, o):
         self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)

@@ -1,5 +1,10 @@
-import numpy as np
+from __future__ import unicode_literals
+
 import tempfile
+
+from builtins import object
+import numpy as np
+
 
 filename = lambda: tempfile.NamedTemporaryFile().name
 
@@ -20,6 +25,16 @@ INVARIANT_ENVS = (
     })
 )
 
+
+class CustomClass(object):
+
+    def __init__(self, value=5):
+        self.value = value
+
+    def __eq__(self, o):
+        return self.value == o.value
+
+
 INVARIANT_KEYS = (
     'test',
     9,
@@ -30,5 +45,6 @@ INVARIANT_VALUES = (
     'sally',
     3.45,
     (4, 5, max, str),
-    {'name': 'john', (3, 4): np.mean}
+    {'name': 'john', (3, 4): np.mean},
+    CustomClass(8)
 )

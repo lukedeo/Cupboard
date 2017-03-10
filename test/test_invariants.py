@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 
 import pytest
 import numpy as np
@@ -25,6 +26,20 @@ def test_put_get_del_close():
         d.close()
 
 
+def test_type_consistency():
+    for env in INVARIANT_ENVS:
+        d = env(Cupboard)
+        d.rmkeys()
+        for value in INVARIANT_VALUES:
+            for key in INVARIANT_KEYS:
+                d[key] = value
+
+                assert isinstance(d[key], type(value))
+
+        d.rmkeys()
+        d.close()
+
+
 def test_marshal_as():
     for env in INVARIANT_ENVS:
         d = env(Cupboard)
@@ -34,7 +49,7 @@ def test_marshal_as():
                 d['thing'] = 'person'
 
         for k in ['a', 'b', 'c', 'd', 'e']:
-            if k in d.keys():
+            if k in list(d.keys()):
                 del d[k]
         with d.marshal_as('json'):
             d['a'] = 'python is great'
@@ -146,7 +161,7 @@ def test_iteritems_items():
 
         keys, values = [], []
 
-        for k, v in d.iteritems():
+        for k, v in d.items():
             keys.append(k)
             values.append(v)
 

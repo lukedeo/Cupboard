@@ -1,3 +1,0 @@
-set +e
-pip uninstall  -y ${NAME}  >/dev/null 2>&1
-rm -rf ${BASE}/${APP}

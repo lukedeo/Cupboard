@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import pytest
 import os
 from cupboard import Cupboard

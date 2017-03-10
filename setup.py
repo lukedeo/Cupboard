@@ -21,7 +21,7 @@ setup(
                       'variety of KV storage systems.'),
     packages=find_packages(),
     keywords=' '.join(('NoSQL', 'persistent', 'storage', 'key-value',
-                       'store', 'redis', 'leveldb', 'lmdb', 'database'))
+                       'store', 'redis', 'leveldb', 'lmdb', 'database')),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -34,13 +34,8 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     extras_require={
-        'all': ['redis', 'lmdb', 'plyvel']
-        'tests': ['numpy'
-                  'pytest',
-                  'pytest-cov',
-                  'pytest-pep8',
-                  'pytest-xdist',
-                  'python-coveralls',
-                  'coverage==3.7.1'],
+        'all': ['redis', 'lmdb', 'plyvel'],
+        'tests': ['numpy' 'pytest', 'pytest-cov', 'pytest-pep8',
+                  'pytest-xdist', 'python-coveralls', 'coverage==3.7.1']
     }
 )

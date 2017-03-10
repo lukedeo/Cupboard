@@ -13,6 +13,7 @@ setup(
     author_email='lukedeo@ldo.io',
     url='https://github.com/vaitech/cupboard',
     license='Apache 2.0',
+    install_requires=['future']
     long_description=('Abstracted interface for a variety of key value storage '
                       'systems. Developers get tired of having to refactor '
                       'around different APIs for different storage systems. '

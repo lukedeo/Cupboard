@@ -26,5 +26,5 @@ script:
   - PYTHONPATH=$(pwd) py.test test/
   - PYTHONPATH=$(pwd) py.test --pep8 -m pep8
   
-# after_success:
-#   - coveralls
+after_success:
+  - coveralls

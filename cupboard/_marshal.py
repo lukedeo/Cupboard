@@ -142,9 +142,15 @@ class MarshalHandler(object):
     def _unmarshal_json(self, buf):
 
         if buf.startswith(self.JSON_IDENTIFIER):
-            return _obj_from_json_string(buf.replace(self.JSON_IDENTIFIER, b''))
+            return _obj_from_json_string(str(
+                buf.replace(self.JSON_IDENTIFIER, b''), 'utf-8'
+            ))
+
         if buf.startswith(self.JSONGZ_IDENTIFIER):
-            return _obj_from_json_string(_from_gzip(buf.replace(self.JSONGZ_IDENTIFIER, b'')))
+            return _obj_from_json_string(str(
+                _from_gzip(buf.replace(self.JSONGZ_IDENTIFIER, b'')), 'utf-8'
+            ))
+
         raise ValueError('Cannot unmarshal with JSON protocol when '
                          'identifier is of '
                          'type <{}>'.format(self.get_protocol(buf)))
@@ -157,14 +163,20 @@ class MarshalHandler(object):
         if buf.startswith(self.BYTES_IDENTIFIER):
             return prjexpr(buf.replace(self.BYTES_IDENTIFIER, b''))
         if buf.startswith(self.BYTESGZ_IDENTIFIER):
-            return prjexpr(_from_gzip(buf.replace(self.BYTESGZ_IDENTIFIER, b'')))
+            return prjexpr(_from_gzip(buf.replace(
+                self.BYTESGZ_IDENTIFIER, b''
+            )))
+
         raise ValueError('Cannot unmarshal with raw bytes protocol when '
                          'identifier is of '
                          'type <{}>'.format(self.get_protocol(buf)))
 
     def _unmarshal_pickle(self, buf):
         if buf.startswith(self.PICKLE_IDENTIFIER):
-            return _obj_from_pkl_string(buf.replace(self.PICKLE_IDENTIFIER, b''))
+            return _obj_from_pkl_string(buf.replace(
+                self.PICKLE_IDENTIFIER, b''
+            ))
+
         raise ValueError('Cannot unmarshal with raw bytes protocol when '
                          'identifier is of '
                          'type <{}>'.format(self.get_protocol(buf)))

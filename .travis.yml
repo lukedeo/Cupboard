@@ -5,6 +5,7 @@ cache: pip
 matrix:
     include:
         - python: 2.7
+        - python: 3.4
         - python: 3.5
         - python: 3.6
 before_install:
@@ -22,8 +23,8 @@ install:
   - cd $BASE_DIR
 # command to run tests
 script:
-  - py.test test/
-  - py.test --pep8 -m pep8
+  - PYTHONPATH=$(pwd) py.test test/
+  - PYTHONPATH=$(pwd) py.test --pep8 -m pep8
   
 # after_success:
 #   - coveralls

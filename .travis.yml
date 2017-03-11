@@ -23,8 +23,7 @@ install:
   - cd $BASE_DIR
 # command to run tests
 script:
-  - PYTHONPATH=$(pwd) py.test test/
   - PYTHONPATH=$(pwd) py.test --pep8 -m pep8
-  
+  - PYTHONPATH=$(pwd) py.test test/
 after_success:
   - coveralls

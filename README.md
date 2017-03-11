@@ -8,4 +8,4 @@ A dictionary-like abstraction for Redis, LevelDB, and LMDB in Python.
 
 You will need one (or more) of the Python [LevelDB](https://plyvel.readthedocs.io), [LMDB](https://lmdb.readthedocs.io/en/release/), or [Redis](https://redis-py.readthedocs.io/en/latest/) clients.
 
-Cupboard is installable via `pip`, with `pip install cupboard`.
+Cupboard is installable via `pip`, with `pip install Cupboard`.

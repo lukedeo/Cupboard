@@ -2,16 +2,11 @@ sudo: required
 dist: trusty
 language: python
 cache: pip
-# cache:
-#   pip: true
-#   directories:
-#     - .autoconf
-#     - $HOME/.m2
 matrix:
     include:
         - python: 2.7
-        # - python: 3.5
-        # - python: 3.6
+        - python: 3.5
+        - python: 3.6
 before_install:
   - sudo apt-get update
 install:
@@ -27,8 +22,8 @@ install:
   - cd $BASE_DIR
 # command to run tests
 script:
-  # run keras backend init to initialize backend config
   - py.test test/
+  - py.test --pep8 -m pep8
   
 # after_success:
 #   - coveralls

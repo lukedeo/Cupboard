@@ -37,7 +37,7 @@ TB = 1024 * GB
 
 class Cupboard(object):
     """ 
-    Creates a new cupboard instance. 
+    Creates a new cupboard instance.
 
     Can be backed by one of {lmdb, redis, leveldb}.
 

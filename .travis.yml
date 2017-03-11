@@ -2,6 +2,11 @@ sudo: required
 dist: trusty
 language: python
 cache: pip
+# cache:
+#   pip: true
+#   directories:
+#     - .autoconf
+#     - $HOME/.m2
 matrix:
     include:
         - python: 2.7
@@ -10,6 +15,7 @@ matrix:
 before_install:
   - sudo apt-get update
 install:
+  - export BASE_DIR=$(pwd)
   - echo $(python --version)
   - curl -s https://gist.githubusercontent.com/lukedeo/58b4b9cb75d9d62817829b2afa900ac3/raw/a2bbb2fa0cade9885ac343fbc6766586ac5a5b9c/build-leveldb.sh | sudo sh -
   - sudo pip install -e .[all,tests]
@@ -18,6 +24,7 @@ install:
   - cd redis-3.2.8
   - make
   - nohup src/redis-server &> /tmp/redis.log &
+  - cd $BASE_DIR
 # command to run tests
 script:
   # run keras backend init to initialize backend config

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """ 
-file: _backend.py
+file: backend.py
 description: backend implementations 
 author: Luke de Oliveira (lukedeo@vaitech.io)
 """
@@ -23,10 +23,17 @@ POSSIBLE_BACKENDS = AVAILABLE_BACKENDS[:]
 
 
 class BackendUnavailable(ImportError):
+    """
+    Raised if a requested backend is unavailable.
+    """
     pass
 
 
 class ResourceUnavailable(Exception):
+    """
+    Raised if an underlying resource necessary to the proper function of the 
+    backend is unavailable
+    """
     pass
 
 
@@ -37,10 +44,6 @@ BACKEND_OPS = ['write', 'create', 'batchwriter', 'reader', 'keys', 'values',
 def _backend_unavailable(backend):
     def _unavail(*args, **kwargs):
         raise BackendUnavailable('backend: {} is not available'.format(backend))
-
-
-def _to_string(o):
-    return _obj_to_pkl_string(o, _hp)
 
 
 # creation routines
@@ -216,7 +219,6 @@ def _redis_iteritems(db, projexpr):
 
 
 # write routines
-
 def _lmdb_batchwriter(db, projexpr, writer, iterable):
     with db.begin(write=False) as writer:
         for k, v in iterable:
@@ -260,12 +262,19 @@ AVAILABLE_BACKENDS = [
     if _ not in UNAVAILABLE_BACKENDS
 ]
 
+
+def available_backends():
+    """
+    Returns a list of the available backends. Backends are removed from the 
+    list if attempting to import them results in an `ImportError`
+    """
+    return AVAILABLE_BACKENDS
+
 for be in UNAVAILABLE_BACKENDS:
     for op in BACKEND_OPS:
         exec('_{}_{} = _backend_unavailable("{}")'.format(op, be, be))
 
-__all__ = ['AVAILABLE_BACKENDS', 'POSSIBLE_BACKENDS',
-           'BACKEND_OPS', 'UNAVAILABLE_BACKENDS']
+__all__ = ['available_backends', 'BackendUnavailable', 'ResourceUnavailable']
 
 __all__ += [
     '_{}_{}'.format(b, o)

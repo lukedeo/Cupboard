@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import tempfile
 
 from builtins import object
+from builtins import bytes
 import numpy as np
 
 
@@ -38,7 +39,8 @@ class CustomClass(object):
 INVARIANT_KEYS = (
     'test',
     9,
-    (4, 'h')
+    (4, 'h'),
+    4.5
 )
 
 INVARIANT_VALUES = (
@@ -46,5 +48,6 @@ INVARIANT_VALUES = (
     3.45,
     (4, 5, max, str),
     {'name': 'john', (3, 4): np.mean},
-    CustomClass(8)
+    CustomClass(8),
+    bytes(b'msg')
 )

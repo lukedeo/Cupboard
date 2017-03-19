@@ -2,8 +2,24 @@ from __future__ import unicode_literals
 
 import pytest
 import os
-from cupboard import Cupboard
+from cupboard import Cupboard, redis_cupboard, lmdb_cupboard, leveldb_cupboard
 from redis import ConnectionError
+from test_env import filename
+
+
+def test_helper_redis():
+    d = redis_cupboard()
+    d.close()
+
+
+def test_helper_lmdb():
+    d = lmdb_cupboard(filename())
+    d.close()
+
+
+def test_helper_leveldb():
+    d = leveldb_cupboard(filename())
+    d.close()
 
 
 def test_redis_unavail():

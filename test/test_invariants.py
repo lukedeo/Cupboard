@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import pytest
 import numpy as np
 from cupboard import Cupboard
-from cupboard._backend import POSSIBLE_BACKENDS
+from cupboard import POSSIBLE_BACKENDS
 from redis import ConnectionError
 
 from test_env import INVARIANT_ENVS, INVARIANT_KEYS, INVARIANT_VALUES, filename
@@ -140,6 +140,39 @@ def test_batch_set():
         d.rmkeys()
 
 
+def test_update():
+    for env in INVARIANT_ENVS:
+        for repl in INVARIANT_ENVS:
+            d = env(Cupboard)
+            u = repl(Cupboard)
+            d.rmkeys()
+            u.rmkeys()
+
+            payload = [
+                ('john', np.array([1, 2, 3])),
+                (4, (4, 'thing')),
+                ('a', 45.3)
+            ]
+
+            replacement_payload = [
+                ('john', np.array([3, 2, 1])),
+                (4, (4, 'other_thing')),
+                ('b', -0.3)
+            ]
+
+            d.batch_set(payload)
+            u.batch_set(replacement_payload)
+
+            d.update(u)
+
+            assert len(d.keys()) == 4
+
+            assert 'b' in d.keys()
+
+            d.rmkeys()
+            u.rmkeys()
+
+
 def test_delete():
     for env in INVARIANT_ENVS:
         d = env(Cupboard)
@@ -170,7 +203,7 @@ def test_iteritems_items():
 
         keys, values = [], []
 
-        for k, v in d.items():
+        for k, v in d.iteritems():
             keys.append(k)
             values.append(v)
 

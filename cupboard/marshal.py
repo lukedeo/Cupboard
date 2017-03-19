@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-file: _marshal.py
+file: marshal.py
 description: Tools for marshalling objects / data around
 author: Luke de Oliveira (lukedeo@vaitech.io)
 """
@@ -15,12 +15,6 @@ standard_library.install_aliases()
 import sys
 
 from builtins import bytes
-# else:
-# _bytes = bytes
-
-# def bytes(*args, **kwargs):
-#     return _bytes(*args, **kwargs)
-# from past.builtins import basestring
 from builtins import str
 from builtins import object
 
@@ -32,7 +26,7 @@ import gzip
 from json import dumps as _obj_to_json_string, loads as _obj_from_json_string
 import io
 
-AVAILABLE_PROTOCOLS = ['auto', 'pickle', 'json', 'json', 'jsongz', 'bytes',
+AVAILABLE_PROTOCOLS = ['auto', 'pickle', 'json', 'jsongz', 'bytes',
                        'bytesgz']
 
 
@@ -106,7 +100,6 @@ class MarshalHandler(object):
             buf = bytes(_obj_to_json_string(obj), 'utf-8')
             # buf = _obj_to_json_string(obj)
         except TypeError as e:
-            raise e
             raise TypeError('Object of class <{}> is not JSON '
                             'serializable'.format(type(obj)))
         if as_gzip:
@@ -124,7 +117,6 @@ class MarshalHandler(object):
             else:
                 raise TypeError()
         except TypeError as e:
-            raise e
             raise TypeError('Object of class <{}> is not serializable by raw '
                             'bytes'.format(type(obj)))
         if as_gzip:

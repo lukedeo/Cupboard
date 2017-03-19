@@ -102,7 +102,7 @@ to other goodies, an expiration specification.
 
     assert '{user_id}' not in d.keys()
 <!--end_code-->
-    
+
 Consult the documentation for the underlying backed to find out what additional 
 arguments might be useful with `Cupboard.pass_arguments` as a context.
 

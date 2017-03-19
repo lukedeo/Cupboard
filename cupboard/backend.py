@@ -274,7 +274,8 @@ for be in UNAVAILABLE_BACKENDS:
     for op in BACKEND_OPS:
         exec('_{}_{} = _backend_unavailable("{}")'.format(op, be, be))
 
-__all__ = ['available_backends', 'BackendUnavailable', 'ResourceUnavailable']
+__all__ = ['available_backends', 'BackendUnavailable', 'ResourceUnavailable',
+           'BACKEND_OPS']
 
 __all__ += [
     '_{}_{}'.format(b, o)

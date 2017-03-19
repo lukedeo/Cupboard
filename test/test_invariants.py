@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import pytest
 import numpy as np
 from cupboard import Cupboard
-from cupboard import POSSIBLE_BACKENDS
 from redis import ConnectionError
 
 from test_env import INVARIANT_ENVS, INVARIANT_KEYS, INVARIANT_VALUES, filename

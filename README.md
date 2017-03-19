@@ -1,6 +1,5 @@
 
 # `Cupboard`
----
 
 
 `Cupboard` is an easy-to-use, near-drop-in replacement for a standard Python
@@ -16,7 +15,6 @@ contributing!_
 [![Coverage Status](https://coveralls.io/repos/lukedeo/Cupboard/badge.svg?branch=master&service=github)](https://coveralls.io/github/lukedeo/Cupboard?branch=master)
 
 ## Installation
----
 Dependency requirements depend upon the desired backend. Technically, you can
 install `Cupboard` without installing any dependencies. This is done to give
 users some flexibility in differing deployment environment setups. You can
@@ -43,7 +41,6 @@ You will simply need [`lmdb`](https://lmdb.readthedocs.io/en/release/) installed
 
 
 ## 30 Seconds to `Cupboard`
----
 
 This section will provide you with a TL;DR of what `Cupboard` allows you to do.
 
@@ -105,7 +102,6 @@ Consult the documentation for the underlying backed to find out what additional
 arguments might be useful with `Cupboard.pass_arguments` as a context.
 
 ## Contributing
----
 
 As `Cupboard` is extremely early in it's development, **please** submit pull 
 requests! In addition, **issues** are extremely useful this early on. In other 

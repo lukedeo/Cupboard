@@ -22,6 +22,8 @@ if __name__ == '__main__':
     stitched = []
     for line in readme.split('\n'):
         line = line.replace('\t', 4 * ' ')
+        if line.strip().replace(' ', '') == '---':
+            continue
         if line.startswith(' '):
             line = line[4:]
         stitched.append(line)

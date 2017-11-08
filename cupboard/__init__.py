@@ -204,4 +204,4 @@ __all__ = [
     'leveldb_cupboard'
 ]
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'

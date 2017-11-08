@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Cupboard',
-    version='0.2.0',
+    version='0.2.1',
     description=('Abstracted interface for a variety '
                  'of key-value storage systems.'),
     author='Luke de Oliveira',

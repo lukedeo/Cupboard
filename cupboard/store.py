@@ -384,8 +384,8 @@ class Cupboard(object):
 
         Raises:
         -------
-            `KeyError` if `ignore_args` is not an argument to the wrapped 
-                function
+
+        `KeyError` if `ignore_args` is not an argument to the wrapped function
 
         """
 

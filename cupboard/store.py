@@ -10,8 +10,11 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from builtins import object
 from contextlib import contextmanager
+from functools import wraps
+import inspect
 import logging
 import os
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +41,23 @@ assert default_backend() in available_backends(), \
 MB = 1048576
 GB = 1024 * MB
 TB = 1024 * GB
+
+
+class ExpiringValue(object):
+    """container class for an object that expires"""
+
+    def __init__(self, value, timeout):
+        self._value = value
+        self._timeout = timeout
+        self._created = time.time()
+
+    @property
+    def expired(self):
+        return (time.time() - self._created) > self._timeout
+
+    @property
+    def value(self):
+        return self._value
 
 
 class Cupboard(object):
@@ -223,8 +243,10 @@ class Cupboard(object):
         return self._M.unmarshal(buf)
 
     def __getitem__(self, key):
-        self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(self._db, self._key_ptr, **self.__additional_args)
+        self._key_ptr = self._M.marshal(
+            key, override='auto', ensure_immutable=True)
+        self._buffer = self._db_reader(
+            self._db, self._key_ptr, **self.__additional_args)
 
         if self._stager is None:
             if key not in self._db_keys(self._db, self._reconstruct_obj):
@@ -237,8 +259,10 @@ class Cupboard(object):
         Get the value associated with the key `key`. If not present, will return 
         `replacement` in it's stead (default `None`).
         """
-        self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(self._db, self._key_ptr, **self.__additional_args)
+        self._key_ptr = self._M.marshal(
+            key, override='auto', ensure_immutable=True)
+        self._buffer = self._db_reader(
+            self._db, self._key_ptr, **self.__additional_args)
 
         if self._stager is None:
             if key not in self._db_keys(self._db, self._reconstruct_obj):
@@ -250,11 +274,13 @@ class Cupboard(object):
         """
         Delete the `(key, value)` pair associated with the passed in `key`.
         """
-        self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
+        self._key_ptr = self._M.marshal(
+            key, override='auto', ensure_immutable=True)
         self._db_delete(self._db, self._key_ptr, **self.__additional_args)
 
     def __setitem__(self, key, o):
-        self._key_ptr = self._M.marshal(key, override='auto', ensure_immutable=True)
+        self._key_ptr = self._M.marshal(
+            key, override='auto', ensure_immutable=True)
         self._stager = o
 
     def __delitem__(self, key):
@@ -305,6 +331,13 @@ class Cupboard(object):
         self._db_batchwriter(self._db, self.__setitem__,
                              self._write_obj, iterable)
 
+    def up(self):
+        """
+        Returns a boolean indicating if the backend is reachable. Always true 
+        for `lmdb` and `leveldb` backends.
+        """
+        return self._db_up(self._db)
+
     def update(self, u):
         """
         Accepts a list of `(key, value)` pairs, a dictionary, or another 
@@ -317,5 +350,124 @@ class Cupboard(object):
             u = list(u.items())
         self._db_batchwriter(self._db, self.__setitem__,
                              self._write_obj, u)
+
+    def function_cache(self, expire=None, ignore_args=None, protocol='auto'):
+        """ Allows a function to be decorated in order to use the underlying 
+        `cupboard.Cupboard` object to cache return values of a function
+
+        Args:
+        -----
+
+        * `expire (numeric)`: the number of seconds to cache results of this 
+            particular function for.
+        * `ignore_args (string or List[string])`: any arguments 
+            (listed by name) to ignore when caching the function call
+        * `protocol (str)`: one of `auto`, `pickle`, `json`, `jsongz`, 
+            `bytes`, `bytesgz`. `auto` let's cupboard choose the best 
+            marshalling option
+
+        Example:
+        --------
+
+            #!python
+            d = Cupboard(
+                name='meta.db', 
+                create_if_missing=True, 
+                backend='leveldb'
+            )
+
+            @d.function_cache(expire=120, ignore_args='other_arg')
+            def foo(x, y, other_arg):
+                print(other_arg)
+                return x + y
+
+
+        Raises:
+        -------
+            `KeyError` if `ignore_args` is not an argument to the wrapped 
+                function
+
+        """
+
+        class context:
+            ignore_args = []
+            protocol = 'auto'
+            expiration_container = lambda x: x
+
+        protocol = protocol.lower()
+
+        if protocol not in AVAILABLE_PROTOCOLS:
+            raise ValueError('protocol `{}` not valid. Choose from one of {}'
+                             .format(protocol, AVAILABLE_PROTOCOLS))
+
+        # hack for python 2.7 nonlocal equivalent
+        context.ignore_args = ignore_args
+        context.protocol = protocol
+
+        if expire is not None:
+            context.expiration_container = lambda x: ExpiringValue(x, expire)
+
+        def decorator(function):
+
+            @wraps(function)
+            def func(*args, **kwargs):
+
+                if kwargs.pop('skip_cache', False):
+                    return function(*args, **kwargs)
+
+                # Handle cases where caching is down or otherwise not
+                # available.
+                if not self.up():
+                    return function(*args, **kwargs)
+
+                ignore_args = context.ignore_args
+                protocol = context.protocol
+
+                cache_key_dict = inspect.getcallargs(function, *args, **kwargs)
+
+                if ignore_args is not None:
+                    if isinstance(ignore_args, str):
+                        ignore_args = [ignore_args]
+
+                    for argname in ignore_args:
+                        if argname not in cache_key_dict:
+                            raise KeyError(
+                                'asked to ignore argument "{badarg}" that is '
+                                'not present amongst valid arguments '
+                                '[{arglist}] for function {fname}'.format(
+                                    badarg=argname,
+                                    arglist=', '.join(cache_key_dict.keys()),
+                                    fname=function.__name__
+                                )
+                            )
+                        del cache_key_dict[argname]
+
+                cache_key_dict['fname'] = function.__name__
+
+                cache_key = tuple(cache_key_dict.items())
+
+                cached_result = self.get(cache_key, replacement=None)
+
+                if cached_result is not None:
+                    if isinstance(cached_result, ExpiringValue):
+                        if cached_result.expired:
+                            self.delete(cache_key)
+                        else:
+                            return cached_result.value
+                    else:
+                        return cached_result
+
+                result = function(*args, **kwargs)
+
+                with self.marshal_as(protocol):
+                    self.__setitem__(
+                        cache_key,
+                        context.expiration_container(result)
+                    )
+
+                return result
+            return func
+        return decorator
+
 
 __all__ = ['default_backend', 'Cupboard']

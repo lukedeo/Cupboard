@@ -1,5 +1,21 @@
 from setuptools import setup, find_packages
 
+PKG_KEYWORDS = ('NoSQL', 'persistent', 'storage', 'key-value',
+                'store', 'redis', 'leveldb', 'lmdb', 'database')
+
+PKG_LONG_DESCRIPTION = """
+Cupboard is an abstracted interface to a variety of 
+key-value storage systems. Developers get tired of 
+having to refactor around different APIs for different 
+storage systems. Cupboard can serve as a drop-in 
+replacement for a dictionary under most usages and can 
+be backed by a variety of KV storage systems. Fine 
+grained control over marshalling and lower level 
+features specific to different backends are 
+configurable in contexts.
+"""
+
+
 setup(
     name='Cupboard',
     version='0.2.1',
@@ -10,20 +26,11 @@ setup(
     url='https://github.com/lukedeo/Cupboard',
     license='Apache 2.0',
     install_requires=['future'],
-    long_description=('Cupboard is an abstracted interface to a variety of '
-                      'key-value storage systems. Developers get tired of '
-                      'having to refactor around different APIs for different '
-                      'storage systems. Cupboard can serve as a drop-in '
-                      'replacement for a dictionary under most usages and can '
-                      'be backed by a variety of KV storage systems. Fine '
-                      'grained control over marshalling and lower level '
-                      'features specific to different backends are '
-                      'configurable in contexts.'),
+    long_description=PKG_LONG_DESCRIPTION,
     packages=find_packages(),
-    keywords=' '.join(('NoSQL', 'persistent', 'storage', 'key-value',
-                       'store', 'redis', 'leveldb', 'lmdb', 'database')),
+    keywords=' '.join(PKG_KEYWORDS),
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2',

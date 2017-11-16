@@ -38,7 +38,7 @@ class ResourceUnavailable(Exception):
 
 
 BACKEND_OPS = ['write', 'create', 'batchwriter', 'reader', 'keys', 'values',
-               'items', 'iteritems', 'delete', 'rmkeys', 'close']
+               'items', 'iteritems', 'delete', 'rmkeys', 'close', 'up']
 
 
 def _backend_unavailable(backend):
@@ -92,6 +92,19 @@ def _leveldb_close(db):
 def _redis_close(db):
     # what does it mean to "close" redis, anyways?
     pass
+
+
+# routines for checking if connection is live
+def _lmdb_up(db):
+    return True
+
+
+def _leveldb_up(db):
+    return True
+
+
+def _redis_up(db):
+    return db.ping()
 
 
 # write routines

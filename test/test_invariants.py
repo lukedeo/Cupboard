@@ -25,16 +25,11 @@ def test_put_get_del_close():
         d.close()
 
 
-def test_type_consistency():
+def test_conn_up():
     for env in INVARIANT_ENVS:
         d = env(Cupboard)
         d.rmkeys()
-        for value in INVARIANT_VALUES:
-            for key in INVARIANT_KEYS:
-                d[key] = value
-
-                assert isinstance(d[key], type(value))
-
+        assert d.up()
         d.rmkeys()
         d.close()
 

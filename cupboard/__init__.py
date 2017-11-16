@@ -87,7 +87,7 @@ to other goodies, an expiration specification.
 
 <!--begin_code-->
     #!python
-    from cupboard import Cupboard
+    from cupboard import redis_cupboard
     import time
     from some_encryption_library import super_encrypt
 
@@ -105,6 +105,23 @@ to other goodies, an expiration specification.
 
 Consult the documentation for the underlying backed to find out what additional 
 arguments might be useful with `Cupboard.pass_arguments` as a context.
+
+In addition, `Cupboard` provides cache functionality with all backends via a 
+decorator.
+
+<!--begin_code-->
+    #!python
+    from cupboard import Cupboard
+    import random
+
+    d = Cupboard(**cup_args)
+
+    @d.function_cache(expire=3600, ignore_args=['y', 'z'])
+    def foo(x, y, z):
+        return random.random()
+    
+    assert f(1, 2, 3) == f(1, 3, 2)
+<!--end_code-->
 
 ## Contributing
 ---

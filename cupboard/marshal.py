@@ -26,8 +26,7 @@ import gzip
 from json import dumps as _obj_to_json_string, loads as _obj_from_json_string
 import io
 
-AVAILABLE_PROTOCOLS = ['auto', 'pickle', 'json', 'jsongz', 'bytes',
-                       'bytesgz']
+AVAILABLE_PROTOCOLS = ['auto', 'pickle', 'json', 'jsongz', 'bytes', 'bytesgz']
 
 
 def _to_gzip(value):

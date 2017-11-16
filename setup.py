@@ -18,7 +18,7 @@ configurable in contexts.
 
 setup(
     name='Cupboard',
-    version='0.2.1',
+    version='0.2.2',
     description=('Abstracted interface for a variety '
                  'of key-value storage systems.'),
     author='Luke de Oliveira',

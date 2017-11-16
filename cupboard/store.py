@@ -392,7 +392,7 @@ class Cupboard(object):
         class context:
             ignore_args = []
             protocol = 'auto'
-            expiration_container = lambda x: x
+            expiration_container = staticmethod(lambda x: x)
 
         protocol = protocol.lower()
 
@@ -405,7 +405,9 @@ class Cupboard(object):
         context.protocol = protocol
 
         if expire is not None:
-            context.expiration_container = lambda x: ExpiringValue(x, expire)
+            context.expiration_container = staticmethod(
+                lambda x: ExpiringValue(x, expire)
+            )
 
         def decorator(function):
 

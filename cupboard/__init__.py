@@ -119,7 +119,7 @@ decorator.
     @d.function_cache(expire=3600, ignore_args=['y', 'z'])
     def foo(x, y, z):
         return random.random()
-    
+
     assert f(1, 2, 3) == f(1, 3, 2)
 <!--end_code-->
 

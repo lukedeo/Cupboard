@@ -235,7 +235,7 @@ class Cupboard(object):
     def __contains__(self, key):
         return self._db_reader(
             self._db, self._marshal_key(key), **self.__additional_args) is not None
-    
+
     def __getitem__(self, key):
         buffer = self._db_reader(
             self._db, self._marshal_key(key), **self.__additional_args)

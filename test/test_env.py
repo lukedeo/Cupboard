@@ -13,7 +13,7 @@ INVARIANT_ENVS = (
     lambda c: c(**{
         'backend': 'redis',
         'host': 'localhost',
-        'db': 0
+        'db': 13
     }),
     lambda c: c(**{
         'name': filename(),

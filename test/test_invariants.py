@@ -8,7 +8,7 @@ from redis import ConnectionError
 from test_env import INVARIANT_ENVS, INVARIANT_KEYS, INVARIANT_VALUES, filename
 
 
-def test_put_get_del_close():
+def test_put_get_contains_del_close():
     for env in INVARIANT_ENVS:
         d = env(Cupboard)
         d.rmkeys()
@@ -18,6 +18,9 @@ def test_put_get_del_close():
 
             for key in INVARIANT_KEYS:
                 assert(value == d[key])
+
+            for key in INVARIANT_KEYS:
+                assert(key in d)
 
             for key in INVARIANT_KEYS:
                 del d[key]
@@ -111,12 +114,13 @@ def test_get_defaults():
         d.rmkeys()
 
 
-def test_get_not_there():
+def test_get_contains_not_there():
     for env in INVARIANT_ENVS:
         d = env(Cupboard)
         d.rmkeys()
         with pytest.raises(KeyError):
             _ = d['key']
+        assert 'key' not in d
         d.rmkeys()
 
 

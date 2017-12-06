@@ -89,8 +89,6 @@ class Cupboard(object):
     def __init__(self, *args, **kwargs):
         """
 
-
-
         Redis Args:
         ----------
 
@@ -184,8 +182,6 @@ class Cupboard(object):
         # get an obj reference for batch writes (later)
         self._write_obj = self._db
 
-        self._buffer = None
-        self._key_ptr = None
         self.__additional_args = {}
 
         self._M = MarshalHandler()
@@ -228,60 +224,48 @@ class Cupboard(object):
         yield
         self.__additional_args = {}
 
-    @property
-    def _stager(self):
-        return self._reconstruct_obj(self._buffer)
-
-    @_stager.setter
-    def _stager(self, o):
-        self._buffer = self._M.marshal(o)
-        self._db_write(self._write_obj, self._key_ptr,
-                       self._buffer, **self.__additional_args)
-
     # @staticmethod
     def _reconstruct_obj(self, buf):
         return self._M.unmarshal(buf)
 
-    def __getitem__(self, key):
-        self._key_ptr = self._M.marshal(
+    def _marshal_key(self, key):
+        return self._M.marshal(
             key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(
-            self._db, self._key_ptr, **self.__additional_args)
 
-        if self._stager is None:
-            if key not in self._db_keys(self._db, self._reconstruct_obj):
-                raise KeyError('key: {} not found in storage'.format(key))
+    def __contains__(self, key):
+        return self._db_reader(
+            self._db, self._marshal_key(key), **self.__additional_args) is not None
 
-        return self._stager
+    def __getitem__(self, key):
+        buffer = self._db_reader(
+            self._db, self._marshal_key(key), **self.__additional_args)
+        if buffer is None:
+            raise KeyError('key: {} not found in storage'.format(key))
+        else:
+            return self._reconstruct_obj(buffer)
 
     def get(self, key, replacement=None):
         """
         Get the value associated with the key `key`. If not present, will return 
         `replacement` in it's stead (default `None`).
         """
-        self._key_ptr = self._M.marshal(
-            key, override='auto', ensure_immutable=True)
-        self._buffer = self._db_reader(
-            self._db, self._key_ptr, **self.__additional_args)
-
-        if self._stager is None:
-            if key not in self._db_keys(self._db, self._reconstruct_obj):
-                return replacement
-
-        return self._stager
+        buffer = self._db_reader(
+            self._db, self._marshal_key(key), **self.__additional_args)
+        if buffer is None:
+            return replacement
+        else:
+            return self._reconstruct_obj(buffer)
 
     def delete(self, key):
         """
         Delete the `(key, value)` pair associated with the passed in `key`.
         """
-        self._key_ptr = self._M.marshal(
-            key, override='auto', ensure_immutable=True)
-        self._db_delete(self._db, self._key_ptr, **self.__additional_args)
+        self._db_delete(self._db, self._marshal_key(key), **self.__additional_args)
 
     def __setitem__(self, key, o):
-        self._key_ptr = self._M.marshal(
-            key, override='auto', ensure_immutable=True)
-        self._stager = o
+        buffer = self._M.marshal(o)
+        self._db_write(self._write_obj, self._marshal_key(key),
+                       buffer, **self.__additional_args)
 
     def __delitem__(self, key):
         self.delete(key)

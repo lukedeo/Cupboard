@@ -21,7 +21,7 @@ users some flexibility in differing deployment environment setups. You can
 simply install `Cupboard` via
 
 ```
-pip install Cupboard
+pip install cupboard
 ```
 
 Specific requirements of various backends are outlined below.

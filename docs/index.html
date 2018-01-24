@@ -1115,17 +1115,17 @@ dictionary. <code>Cupboard</code> provides a pythonic key-value store that can b
 by Redis, LMDB, or LevelDB, allowing developers to write code with dictionaries
 on their laptop, deploy to a phone where one might need a LevelDB type
 functionality, then deploy to a Redis (Elasticache) backed environment on AWS.</p>
-<p><em><a href="https://github.com/lukedeo/Cupboard">Join us on GitHub</a> if you feel like
+<p><em><a href="https://github.com/vaitech/Cupboard">Join us on GitHub</a> if you feel like
 contributing!</em></p>
-<p><a href="https://travis-ci.org/lukedeo/Cupboard"><img alt="Build Status" src="https://travis-ci.org/lukedeo/Cupboard.svg" /></a>
-<a href="https://coveralls.io/github/lukedeo/Cupboard?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/lukedeo/Cupboard/badge.svg?branch=master&amp;service=github" /></a></p>
+<p><a href="https://travis-ci.org/vaitech/Cupboard"><img alt="Build Status" src="https://travis-ci.org/vaitech/Cupboard.svg" /></a>
+<a href="https://coveralls.io/github/vaitech/Cupboard?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/vaitech/Cupboard/badge.svg?branch=master&amp;service=github" /></a></p>
 <h2>Installation</h2>
 <hr />
 <p>Dependency requirements depend upon the desired backend. Technically, you can
 install <code>Cupboard</code> without installing any dependencies. This is done to give
 users some flexibility in differing deployment environment setups. You can
 simply install <code>Cupboard</code> via</p>
-<p><code>pip install Cupboard</code></p>
+<p><code>pip install cupboard</code></p>
 <p>Specific requirements of various backends are outlined below.</p>
 <h3>Redis</h3>
 <p>You will need <a href="https://redis.io/topics/quickstart"><code>redis-server</code></a> or
@@ -1331,8 +1331,6 @@ operator. I.e., </p>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
-
-
 <span class="sd">        Redis Args:</span>
 <span class="sd">        ----------</span>
 
@@ -1426,8 +1424,6 @@ operator. I.e., </p>
         <span class="c1"># get an obj reference for batch writes (later)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_M</span> <span class="o">=</span> <span class="n">MarshalHandler</span><span class="p">()</span>
@@ -1470,60 +1466,48 @@ operator. I.e., </p>
         <span class="k">yield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_stager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">)</span>
-
-    <span class="nd">@_stager.setter</span>
-    <span class="k">def</span> <span class="nf">_stager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_db_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
-
     <span class="c1"># @staticmethod</span>
     <span class="k">def</span> <span class="nf">_reconstruct_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">unmarshal</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_marshal_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
             <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;key: {} not found in storage&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="nb">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">buffer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;key: {} not found in storage&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value associated with the key `key`. If not present, will return </span>
 <span class="sd">        `replacement` in it&#39;s stead (default `None`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">replacement</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span>
+        <span class="nb">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">buffer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">replacement</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the `(key, value)` pair associated with the passed in `key`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_db_delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span> <span class="o">=</span> <span class="n">o</span>
+        <span class="nb">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                       <span class="nb">buffer</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -1634,7 +1618,7 @@ operator. I.e., </p>
         <span class="k">class</span> <span class="nc">context</span><span class="p">:</span>
             <span class="n">ignore_args</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">protocol</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-            <span class="n">expiration_container</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+            <span class="n">expiration_container</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
 
         <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
@@ -1647,7 +1631,9 @@ operator. I.e., </p>
         <span class="n">context</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
 
         <span class="k">if</span> <span class="n">expire</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">expiration_container</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">ExpiringValue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expire</span><span class="p">)</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">expiration_container</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">ExpiringValue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expire</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
 
@@ -1861,8 +1847,6 @@ the connection is unreachable with a <code>PING</code>.</p></div>
     <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_create</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># get an obj reference for batch writes (later)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_write_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_M</span> <span class="o">=</span> <span class="n">MarshalHandler</span><span class="p">()</span>
 </pre></div>
@@ -1942,9 +1926,7 @@ the connection is unreachable with a <code>PING</code>.</p></div>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete the `(key, value)` pair associated with the passed in `key`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
-        <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_db_delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_db_delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
 </pre></div>
 
   </div>
@@ -2023,7 +2005,7 @@ the connection is unreachable with a <code>PING</code>.</p></div>
     <span class="k">class</span> <span class="nc">context</span><span class="p">:</span>
         <span class="n">ignore_args</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">protocol</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="n">expiration_container</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+        <span class="n">expiration_container</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">protocol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AVAILABLE_PROTOCOLS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;protocol `{}` not valid. Choose from one of {}&#39;</span>
@@ -2032,7 +2014,9 @@ the connection is unreachable with a <code>PING</code>.</p></div>
     <span class="n">context</span><span class="o">.</span><span class="n">ignore_args</span> <span class="o">=</span> <span class="n">ignore_args</span>
     <span class="n">context</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span>
     <span class="k">if</span> <span class="n">expire</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">expiration_container</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">ExpiringValue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expire</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">expiration_container</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">ExpiringValue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">expire</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2106,14 +2090,12 @@ the connection is unreachable with a <code>PING</code>.</p></div>
 <span class="sd">    Get the value associated with the key `key`. If not present, will return </span>
 <span class="sd">    `replacement` in it&#39;s stead (default `None`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_M</span><span class="o">.</span><span class="n">marshal</span><span class="p">(</span>
-        <span class="n">key</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">ensure_immutable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_ptr</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">replacement</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stager</span>
+    <span class="nb">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_reader</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marshal_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__additional_args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">buffer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">replacement</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconstruct_obj</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
 </pre></div>
 
   </div>

@@ -5,14 +5,15 @@ PKG_KEYWORDS = ('NoSQL', 'persistent', 'storage', 'key-value',
                 'store', 'redis', 'leveldb', 'lmdb', 'database')
 PKG_LONG_DESCRIPTION = """
 Cupboard is an abstracted interface to a variety of 
-key-value storage systems. Developers get tired of 
-having to refactor around different APIs for different 
-storage systems. Cupboard can serve as a drop-in 
+key-value storage systems. Cupboard can serve as a drop-in 
 replacement for a dictionary under most usages and can 
-be backed by a variety of KV storage systems. Fine 
+be backed by a variety of key-value storage systems. Fine 
 grained control over marshalling and lower level 
 features specific to different backends are 
-configurable in contexts.
+configurable in contexts. Cupboard reduces cognitive overhead while enforcing 
+best practices in key-value store usage. In addition, Cupboard provides an 
+easy-to-use function memoization decorator that, once again, is backend 
+agnostic.
 """
 
 

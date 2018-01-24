@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
-import cupboard
 
-VERSION = cupboard.__version__
+VERSION = '0.2.3'
 PKG_KEYWORDS = ('NoSQL', 'persistent', 'storage', 'key-value',
                 'store', 'redis', 'leveldb', 'lmdb', 'database')
 PKG_LONG_DESCRIPTION = """

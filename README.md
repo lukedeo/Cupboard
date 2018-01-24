@@ -8,11 +8,11 @@ by Redis, LMDB, or LevelDB, allowing developers to write code with dictionaries
 on their laptop, deploy to a phone where one might need a LevelDB type
 functionality, then deploy to a Redis (Elasticache) backed environment on AWS.
 
-_[Join us on GitHub](https://github.com/lukedeo/Cupboard) if you feel like
+_[Join us on GitHub](https://github.com/vaitech/Cupboard) if you feel like
 contributing!_
 
-[![Build Status](https://travis-ci.org/lukedeo/Cupboard.svg)](https://travis-ci.org/lukedeo/Cupboard)
-[![Coverage Status](https://coveralls.io/repos/lukedeo/Cupboard/badge.svg?branch=master&service=github)](https://coveralls.io/github/lukedeo/Cupboard?branch=master)
+[![Build Status](https://travis-ci.org/vaitech/Cupboard.svg)](https://travis-ci.org/vaitech/Cupboard)
+[![Coverage Status](https://coveralls.io/repos/vaitech/Cupboard/badge.svg?branch=master&service=github)](https://coveralls.io/github/vaitech/Cupboard?branch=master)
 
 ## Installation
 Dependency requirements depend upon the desired backend. Technically, you can

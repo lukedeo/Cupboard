@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+import cupboard
 
+VERSION = cupboard.__version__
 PKG_KEYWORDS = ('NoSQL', 'persistent', 'storage', 'key-value',
                 'store', 'redis', 'leveldb', 'lmdb', 'database')
-
 PKG_LONG_DESCRIPTION = """
 Cupboard is an abstracted interface to a variety of 
 key-value storage systems. Developers get tired of 
@@ -18,14 +19,16 @@ configurable in contexts.
 
 setup(
     name='Cupboard',
-    version='0.2.3',
+    version=VERSION,
     description=('Abstracted interface for a variety '
                  'of key-value storage systems.'),
     author='Luke de Oliveira',
-    author_email='lukedeo@ldo.io',
-    url='https://github.com/lukedeo/Cupboard',
+    author_email='lukedeo@vaitech.io',
+    url='https://github.com/vaitech/Cupboard',
     license='Apache 2.0',
     install_requires=['future'],
+    download_url='https://github.com/vaitech/Cupboard/archive/{}.tar.gz'.format(
+        VERSION),
     long_description=PKG_LONG_DESCRIPTION,
     packages=find_packages(),
     keywords=' '.join(PKG_KEYWORDS),

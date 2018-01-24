@@ -13,7 +13,7 @@ _[Join us on GitHub](https://github.com/vaitech/Cupboard) if you feel like
 contributing!_
 
 [![Build Status](https://travis-ci.org/vaitech/Cupboard.svg)](https://travis-ci.org/vaitech/Cupboard)
-[![Coverage Status](https://coveralls.io/repos/vaitech/Cupboard/badge.svg?branch=master&service=github)](https://coveralls.io/github/vaitech/Cupboard?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/vaitech/Cupboard/badge.svg?branch=master)](https://coveralls.io/github/vaitech/Cupboard?branch=master)
 
 ## Installation
 ---
@@ -131,7 +131,6 @@ requests! In addition, **issues** are extremely useful this early on. In other
 words, get involved! Breaking things is ok! 
 
 """
-
 
 import logging
 

@@ -44,6 +44,9 @@ setup(
     ],
     extras_require={
         'all': ['redis', 'lmdb', 'plyvel'],
+        'lmdb': ['lmdb'],
+        'redis': ['redis'],
+        'leveldb': ['plyvel'],
         'tests': ['numpy', 'pytest', 'pytest-cov', 'pytest-pep8',
                   'pytest-xdist', 'python-coveralls']
     }

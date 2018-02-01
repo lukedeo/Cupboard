@@ -43,7 +43,8 @@ BACKEND_OPS = ['write', 'create', 'batchwriter', 'reader', 'keys', 'values',
 
 def _backend_unavailable(backend):
     def _unavail(*args, **kwargs):
-        raise BackendUnavailable('backend: {} is not available'.format(backend))
+        raise BackendUnavailable(
+            'backend: {} is not available'.format(backend))
 
 
 # creation routines

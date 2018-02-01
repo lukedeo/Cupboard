@@ -16,6 +16,8 @@ import logging
 import os
 import time
 
+from six import with_metaclass
+
 logger = logging.getLogger(__name__)
 
 # get everything def'd in __all__ inside _backend.py
@@ -60,7 +62,40 @@ class ExpiringValue(object):
         return self._value
 
 
-class Cupboard(object):
+def sync_local_object_reference(fn):
+    from functools import wraps
+
+    @wraps(fn)
+    def f(self, *args, **kw):
+        if self._can_resolve_reference:
+            self._can_resolve_reference = False
+            self._flush_object_reference()
+            # if hasattr(self, '_reference_to_object'):
+            #     self.update(self._reference_to_object)
+            #     self._reference_to_object = {}
+        self._can_resolve_reference = True
+        return fn(self, *args, **kw)
+
+    f.__doc__ = fn.__doc__
+    return f
+
+
+class _MetaCupboard(type):
+
+    def __new__(cls, name, bases, local):
+        for attr in local:
+            print(attr)
+            if attr in {'__init__', '_internal_update', '__setitem__'} or \
+                    attr.startswith('_db'):
+                print('SKIP')
+                continue
+            value = local[attr]
+            if callable(value):
+                local[attr] = sync_local_object_reference(value)
+        return type.__new__(cls, name, bases, local)
+
+
+class Cupboard(with_metaclass(_MetaCupboard, object)):
     """ 
     Creates a new Cupboard instance.
 
@@ -186,6 +221,10 @@ class Cupboard(object):
 
         self._M = MarshalHandler()
 
+        # contain an in-memory reference to an object retrieved by __getitem__
+        self._reference_to_object = {}
+        self._can_resolve_reference = True
+
     @contextmanager
     def marshal_as(self, protocol):
         """ Allows marshalling using different protocols for handling the 
@@ -224,48 +263,61 @@ class Cupboard(object):
         yield
         self.__additional_args = {}
 
+    def _flush_object_reference(self):
+        print(self._reference_to_object)
+        if self._reference_to_object:
+            self.update(self._reference_to_object)
+            self._reference_to_object = {}
+
     # @staticmethod
     def _reconstruct_obj(self, buf):
         return self._M.unmarshal(buf)
 
     def _marshal_key(self, key):
-        return self._M.marshal(
-            key, override='auto', ensure_immutable=True)
+        return self._M.marshal(key, override='auto', ensure_immutable=True)
 
     def __contains__(self, key):
-        return self._db_reader(
-            self._db, self._marshal_key(key), **self.__additional_args) is not None
+        keys_present = self._db_reader(
+            self._db,
+            self._marshal_key(key),
+            **self.__additional_args
+        )
+        return keys_present is not None
 
     def __getitem__(self, key):
-        buffer = self._db_reader(
-            self._db, self._marshal_key(key), **self.__additional_args)
-        if buffer is None:
+        buf = self._db_reader(self._db, self._marshal_key(key),
+                              **self.__additional_args)
+        if buf is None:
             raise KeyError('key: {} not found in storage'.format(key))
         else:
-            return self._reconstruct_obj(buffer)
+            reconstructed_obj = self._reconstruct_obj(buf)
+            self._reference_to_object = {key: reconstructed_obj}
+            return self._reference_to_object[key]
 
     def get(self, key, replacement=None):
         """
         Get the value associated with the key `key`. If not present, will return 
         `replacement` in it's stead (default `None`).
         """
-        buffer = self._db_reader(
-            self._db, self._marshal_key(key), **self.__additional_args)
-        if buffer is None:
+        buf = self._db_reader(self._db, self._marshal_key(key),
+                              **self.__additional_args)
+        if buf is None:
             return replacement
         else:
-            return self._reconstruct_obj(buffer)
+            return self._reconstruct_obj(buf)
 
     def delete(self, key):
         """
         Delete the `(key, value)` pair associated with the passed in `key`.
         """
-        self._db_delete(self._db, self._marshal_key(key), **self.__additional_args)
+        self._db_delete(self._db, self._marshal_key(key),
+                        **self.__additional_args)
 
     def __setitem__(self, key, o):
-        buffer = self._M.marshal(o)
+        # self._flush_object_reference()
+        buf = self._M.marshal(o)
         self._db_write(self._write_obj, self._marshal_key(key),
-                       buffer, **self.__additional_args)
+                       buf, **self.__additional_args)
 
     def __delitem__(self, key):
         self.delete(key)

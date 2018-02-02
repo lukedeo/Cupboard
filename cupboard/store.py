@@ -233,8 +233,8 @@ class Cupboard(object):
             key, override='auto', ensure_immutable=True)
 
     def __contains__(self, key):
-        return self._db_reader(
-            self._db, self._marshal_key(key), **self.__additional_args) is not None
+        return self._db_reader(self._db, self._marshal_key(key),
+                               **self.__additional_args) is not None
 
     def __getitem__(self, key):
         buffer = self._db_reader(
@@ -260,7 +260,8 @@ class Cupboard(object):
         """
         Delete the `(key, value)` pair associated with the passed in `key`.
         """
-        self._db_delete(self._db, self._marshal_key(key), **self.__additional_args)
+        self._db_delete(self._db, self._marshal_key(key),
+                        **self.__additional_args)
 
     def __setitem__(self, key, o):
         buffer = self._M.marshal(o)

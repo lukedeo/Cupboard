@@ -43,7 +43,8 @@ BACKEND_OPS = ['write', 'create', 'batchwriter', 'reader', 'keys', 'values',
 
 def _backend_unavailable(backend):
     def _unavail(*args, **kwargs):
-        raise BackendUnavailable('backend: {} is not available'.format(backend))
+        raise BackendUnavailable('backend: {} is not available'
+                                 .format(backend))
 
 
 # creation routines
@@ -274,6 +275,11 @@ AVAILABLE_BACKENDS = [
     _ for _ in AVAILABLE_BACKENDS
     if _ not in UNAVAILABLE_BACKENDS
 ]
+
+if not AVAILABLE_BACKENDS:
+    raise RuntimeError(
+        'None of redis, leveldb, or lmdb appear to be available.'
+    )
 
 
 def available_backends():
